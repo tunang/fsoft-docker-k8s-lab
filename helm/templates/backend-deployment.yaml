@@ -45,6 +45,14 @@ spec:
               cpu: "500m"      # Maximum CPU allowed (0.5 core)
               memory: "128Mi"  # Maximum memory allowed (128 Megabytes)
 
+          startupProbe:
+            httpGet:
+              path: /api/healthz
+              port: 3000
+
+            periodSeconds: 2
+            failureThreshold: 15
+            
           livenessProbe:
             httpGet:
               path: /api/healthz
