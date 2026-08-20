@@ -57,7 +57,7 @@ frontend:
 
 
 backend:
-  replicaCount: 2
+  replicaCount: 3
 
   image:
     repository: tunang227/notes-backend
