@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: postgres
+  namespace: {{ .Values.namespace.app }}
+
+  labels:
+    {{- include "notes.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+
+spec:
+  serviceName: postgres
+
+  replicas: {{ .Values.postgres.replicaCount }}
+
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: notes
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: database
+
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: notes
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: database
+
+    spec:
+      nodeSelector:
+        workload: {{ .Values.postgres.nodeSelector.workload }}
+
+      tolerations:
+        - key: {{ .Values.postgres.toleration.key | quote }}
+          operator: Equal
+          value: {{ .Values.postgres.toleration.value | quote }}
+          effect: {{ .Values.postgres.toleration.effect }}
+
+      containers:
+        - name: postgres
+
+          image: "{{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}"
+
+          imagePullPolicy: {{ .Values.postgres.image.pullPolicy }}
+
+          ports:
+            - name: postgres
+              containerPort: {{ .Values.postgres.service.port }}
+
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_DB
+
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        
+        storageClassName: standard
+
+        resources:
+          requests:
+            storage: {{ .Values.postgres.persistence.size }}

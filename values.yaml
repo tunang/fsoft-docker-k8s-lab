@@ -1,0 +1,120 @@
+namespace:
+  app: app
+  edge: edge
+
+
+frontend:
+  replicaCount: 2
+
+  image:
+    repository: tunang227/notes-frontend
+    tag: latest
+    pullPolicy: Always
+
+  containerPort: 80
+
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 80
+
+  edgeService:
+    type: ExternalName
+    externalName: frontend.app.svc.cluster.local
+
+  nodeSelector:
+    workload: frontend
+
+  toleration:
+    key: dedicated
+    operator: Equal
+    value: frontend
+    effect: NoSchedule
+
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "64Mi"
+    limits:
+      cpu: "500m"
+      memory: "128Mi"
+
+  livenessProbe:
+    path: /healthz
+    port: 80
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+  readinessProbe:
+    path: /readyz
+    port: 80
+    initialDelaySeconds: 3
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+
+backend:
+  replicaCount: 2
+
+  image:
+    repository: tunang227/notes-backend
+    tag: 1.2.0
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+
+  nodeSelector:
+    workload: backend
+
+  toleration:
+    key: dedicated
+    operator: Equal
+    value: backend
+    effect: NoSchedule
+
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 30
+
+postgres:
+  replicaCount: 1
+
+  image:
+    repository: postgres
+    tag: "15-alpine"
+    pullPolicy: IfNotPresent
+
+  service:
+    port: 5432
+
+  auth:
+    database: mydb
+    username: postgres
+    password: password
+    url: postgresql://postgres:password@postgres:5432/mydb?schema=public
+
+  persistence:
+    size: 1Gi
+
+  nodeSelector:
+    workload: database
+
+  toleration:
+    key: dedicated
+    value: database
+    effect: NoSchedule
+
+
+ingress:
+  enabled: true
+  className: nginx
+  host: notes.local
+  port: 80
