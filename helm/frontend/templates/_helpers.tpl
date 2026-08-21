@@ -1,15 +1,15 @@
-{{- define "notes.name" -}}
+{{- define "notes-fe.name" -}}
 {{ .Chart.Name }}
 {{- end }}
 
 
-{{- define "notes.fullname" -}}
+{{- define "notes-fe.fullname" -}}
 {{ printf "%s-%s" .Release.Name .Chart.Name }}
 {{- end }}
 
 
-{{- define "notes.labels" -}}
-app.kubernetes.io/name: {{ include "notes.name" . }}
+{{- define "notes-fe.labels" -}}
+app.kubernetes.io/name: {{ include "notes-fe.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}

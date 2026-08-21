@@ -3,10 +3,10 @@ kind: Service
 
 metadata:
   name: postgres
-  namespace: {{ .Values.namespace.app }}
+  namespace: {{ .Values.namespace }}
 
   labels:
-    {{- include "notes.labels" . | nindent 4 }}
+    {{- include "notes-db.labels" . | nindent 4 }}
     app.kubernetes.io/component: database
 
 spec:
@@ -19,5 +19,5 @@ spec:
 
   ports:
     - name: postgres
-      port: {{ .Values.postgres.service.port }}
+      port: {{ .Values.service.port }}
       targetPort: postgres

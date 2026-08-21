@@ -1,0 +1,28 @@
+namespace: app
+
+replicaCount: 1
+
+image:
+  repository: postgres
+  tag: "15-alpine"
+  pullPolicy: IfNotPresent
+
+service:
+  port: 5432
+
+auth:
+  database: mydb
+  username: postgres
+  password: password
+  url: postgresql://postgres:password@postgres:5432/mydb?schema=public
+
+persistence:
+  size: 1Gi
+
+nodeSelector:
+  workload: database
+
+toleration:
+  key: dedicated
+  value: database
+  effect: NoSchedule

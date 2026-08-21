@@ -5,9 +5,9 @@ metadata:
   namespace: {{ .Values.namespace.edge }}
 
   labels:
-    {{- include "notes.labels" . | nindent 4 }}
+    {{- include "notes-fe.labels" . | nindent 4 }}
     app.kubernetes.io/component: frontend-edge
 
 spec:
-  type: {{ .Values.frontend.edgeService.type }}
-  externalName: {{ .Values.frontend.edgeService.externalName }}
+  type: {{ .Values.edgeService.type }}
+  externalName: {{ .Values.edgeService.externalName }}

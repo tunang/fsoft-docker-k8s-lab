@@ -3,16 +3,16 @@ kind: StatefulSet
 
 metadata:
   name: postgres
-  namespace: {{ .Values.namespace.app }}
+  namespace: {{ .Values.namespace }}
 
   labels:
-    {{- include "notes.labels" . | nindent 4 }}
+    {{- include "notes-db.labels" . | nindent 4 }}
     app.kubernetes.io/component: database
 
 spec:
   serviceName: postgres
 
-  replicas: {{ .Values.postgres.replicaCount }}
+  replicas: {{ .Values.replicaCount }}
 
   selector:
     matchLabels:
@@ -29,24 +29,24 @@ spec:
 
     spec:
       nodeSelector:
-        workload: {{ .Values.postgres.nodeSelector.workload }}
+        workload: {{ .Values.nodeSelector.workload }}
 
       tolerations:
-        - key: {{ .Values.postgres.toleration.key | quote }}
+        - key: {{ .Values.toleration.key | quote }}
           operator: Equal
-          value: {{ .Values.postgres.toleration.value | quote }}
-          effect: {{ .Values.postgres.toleration.effect }}
+          value: {{ .Values.toleration.value | quote }}
+          effect: {{ .Values.toleration.effect }}
 
       containers:
         - name: postgres
 
-          image: "{{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
 
-          imagePullPolicy: {{ .Values.postgres.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
 
           ports:
             - name: postgres
-              containerPort: {{ .Values.postgres.service.port }}
+              containerPort: {{ .Values.service.port }}
 
           env:
             - name: POSTGRES_DB
@@ -83,4 +83,4 @@ spec:
 
         resources:
           requests:
-            storage: {{ .Values.postgres.persistence.size }}
+            storage: {{ .Values.persistence.size }}

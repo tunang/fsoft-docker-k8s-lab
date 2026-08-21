@@ -1,0 +1,9 @@
+namespace:
+  app: app
+  edge: edge
+
+ingress:
+  enabled: true
+  className: nginx
+  host: notes.local
+  port: 80

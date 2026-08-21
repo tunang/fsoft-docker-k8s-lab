@@ -5,11 +5,11 @@ metadata:
   namespace: {{ .Values.namespace.app }}
 
   labels:
-    {{- include "notes.labels" . | nindent 4 }}
+    {{- include "notes-fe.labels" . | nindent 4 }}
     app.kubernetes.io/component: frontend
 
 spec:
-  type: {{ .Values.frontend.service.type }}
+  type: {{ .Values.service.type }}
 
   selector:
     app.kubernetes.io/name: notes
@@ -18,5 +18,5 @@ spec:
 
   ports:
     - name: http
-      port: {{ .Values.frontend.service.port }}
-      targetPort: {{ .Values.frontend.service.targetPort }}
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}

@@ -1,0 +1,11 @@
+apiVersion: v2
+
+name: notes-infrastructure
+
+description: Helm chart for Notes application infrastructure (namespaces, ingress)
+
+type: application
+
+version: 0.1.0
+
+appVersion: "1.0.0"

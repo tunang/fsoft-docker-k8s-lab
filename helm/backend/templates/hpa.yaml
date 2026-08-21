@@ -1,13 +1,13 @@
-{{- if .Values.backend.hpa.enabled }}
+{{- if .Values.hpa.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 
 metadata:
   name: backend
-  namespace: {{ .Values.namespace.app }}
+  namespace: {{ .Values.namespace }}
 
   labels:
-    {{- include "notes.labels" . | nindent 4 }}
+    {{- include "notes-be.labels" . | nindent 4 }}
     app.kubernetes.io/component: backend
 
 spec:
@@ -16,8 +16,8 @@ spec:
     kind: Deployment
     name: backend
 
-  minReplicas: {{ .Values.backend.hpa.minReplicas }}
-  maxReplicas: {{ .Values.backend.hpa.maxReplicas }}
+  minReplicas: {{ .Values.hpa.minReplicas }}
+  maxReplicas: {{ .Values.hpa.maxReplicas }}
 
   metrics:
     - type: Resource
@@ -25,5 +25,5 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: {{ .Values.backend.hpa.targetCPUUtilizationPercentage }}
+          averageUtilization: {{ .Values.hpa.targetCPUUtilizationPercentage }}
 {{- end }}

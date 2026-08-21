@@ -6,7 +6,7 @@ metadata:
   namespace: {{ .Values.namespace.edge }}
 
   labels:
-    {{- include "notes.labels" . | nindent 4 }}
+    {{- include "notes-infra.labels" . | nindent 4 }}
 
 spec:
   ingressClassName: {{ .Values.ingress.className }}
