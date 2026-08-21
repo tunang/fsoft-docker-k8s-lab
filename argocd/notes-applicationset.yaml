@@ -1,0 +1,81 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+
+metadata:
+  name: notes
+  namespace: gitops
+
+spec:
+  # =========================================================
+  # GENERATOR
+  # List of components with their specific configurations
+  # =========================================================
+
+  generators:
+    - list:
+        elements:
+          - name: notes-infrastructure
+            chartPath: helm/infrastructure
+            releaseName: notes-infra
+            namespace: gitops
+            syncWave: "0"
+
+          - name: notes-database
+            chartPath: helm/database
+            releaseName: notes-db
+            namespace: gitops
+            syncWave: "1"
+
+          - name: notes-backend
+            chartPath: helm/backend
+            releaseName: notes-be
+            namespace: gitops
+            syncWave: "2"
+
+          - name: notes-frontend
+            chartPath: helm/frontend
+            releaseName: notes-fe
+            namespace: gitops
+            syncWave: "3"
+
+  # =========================================================
+  # TEMPLATE
+  # Application template applied for each element above
+  # =========================================================
+
+  template:
+    metadata:
+      name: "{{ name }}"
+      namespace: gitops
+      annotations:
+        argocd.argoproj.io/sync-wave: "{{ syncWave }}"
+
+    spec:
+      project: default
+
+      source:
+        repoURL: https://github.com/tunang/fsoft-docker-k8s-lab.git
+
+        targetRevision: main
+
+        path: "{{ chartPath }}"
+
+        helm:
+          releaseName: "{{ releaseName }}"
+
+          valueFiles:
+            - values.yaml
+
+      destination:
+        server: https://kubernetes.default.svc
+
+        namespace: "{{ namespace }}"
+
+      syncPolicy:
+
+        automated:
+          prune: true
+          selfHeal: true
+
+        syncOptions:
+          - CreateNamespace=true
