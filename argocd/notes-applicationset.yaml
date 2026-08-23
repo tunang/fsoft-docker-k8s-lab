@@ -12,31 +12,26 @@ spec:
           - name: notes-infrastructure
             chartPath: helm/infrastructure
             releaseName: notes-infra
-            namespace: gitops
+            namespace: edge
             syncWave: "0"
 
           - name: notes-database
             chartPath: helm/database
             releaseName: notes-db
-            namespace: gitops
+            namespace: app
             syncWave: "1"
 
           - name: notes-backend
             chartPath: helm/backend
             releaseName: notes-be
-            namespace: gitops
+            namespace: app
             syncWave: "2"
 
           - name: notes-frontend
             chartPath: helm/frontend
             releaseName: notes-fe
-            namespace: gitops
+            namespace: app
             syncWave: "3"
-
-  # =========================================================
-  # TEMPLATE
-  # Application template applied for each element above
-  # =========================================================
 
   template:
     metadata:
