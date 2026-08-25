@@ -1,0 +1,28 @@
+{{- if .Values.backend.enabled }}
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+
+metadata:
+  name: notes-backend
+  namespace: {{ .Release.Namespace }}
+
+  labels:
+    release: {{ .Values.prometheusRelease }}
+
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Values.backend.namespace }}
+
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.backend.selector.appName }}
+      app.kubernetes.io/component: {{ .Values.backend.selector.component }}
+
+  endpoints:
+    - port: {{ .Values.backend.metrics.port }}
+      path: {{ .Values.backend.metrics.path }}
+      interval: {{ .Values.backend.metrics.interval }}
+
+{{- end }}

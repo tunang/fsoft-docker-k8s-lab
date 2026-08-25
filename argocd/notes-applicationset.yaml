@@ -32,6 +32,12 @@ spec:
             releaseName: notes-fe
             namespace: app
             syncWave: "3"
+          
+          - name: notes-monitoring
+            chartPath: helm/monitoring
+            releaseName: notes-monitor
+            namespace: monitoring
+            syncWave: "4"
 
   template:
     metadata:

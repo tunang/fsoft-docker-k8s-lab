@@ -1,0 +1,15 @@
+prometheusRelease: monitoring
+
+backend:
+  enabled: true
+
+  namespace: app
+
+  selector:
+    appName: notes
+    component: backend
+
+  metrics:
+    port: http
+    path: /metrics
+    interval: 15s
