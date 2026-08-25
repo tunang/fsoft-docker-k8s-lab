@@ -17,8 +17,9 @@ spec:
 
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ .Values.backend.selector.appName }}
-      app.kubernetes.io/component: {{ .Values.backend.selector.component }}
+      app.kubernetes.io/name: notes
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: backend
 
   endpoints:
     - port: {{ .Values.backend.metrics.port }}
