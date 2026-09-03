@@ -17,7 +17,8 @@ spec:
 
   selector:
     matchLabels:
-      app.kubernetes.io/name: notes-backend
+      app.kubernetes.io/name: notes
+      app.kubernetes.io/instance: {{ .Release.Name }}
       app.kubernetes.io/component: backend
 
   endpoints:
