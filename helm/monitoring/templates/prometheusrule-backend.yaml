@@ -1,0 +1,62 @@
+{{- if .Values.alerts.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+
+metadata:
+  name: notes-backend-alerts
+  namespace: {{ .Release.Namespace }}
+
+  labels:
+    release: {{ .Values.prometheusRelease }}
+
+spec:
+  groups:
+    - name: notes-backend
+      rules:
+
+        {{- if .Values.alerts.backendHighErrorRate.enabled }}
+        # Alert 1: Backend trả 5xx liên tục
+        - alert: BackendHighErrorRate
+          expr: |
+            (
+              sum(rate(http_requests_total{status_code=~"5..", namespace="{{ .Values.backend.namespace }}"}[5m]))
+              /
+              sum(rate(http_requests_total{namespace="{{ .Values.backend.namespace }}"}[5m]))
+            ) > {{ .Values.alerts.backendHighErrorRate.threshold }}
+          for: {{ .Values.alerts.backendHighErrorRate.duration }}
+          labels:
+            severity: {{ .Values.alerts.backendHighErrorRate.severity }}
+            component: backend
+          annotations:
+            summary: "Backend high 5xx error rate"
+            description: "Backend 5xx error rate is above {{ .Values.alerts.backendHighErrorRate.threshold }} ({{ mulf .Values.alerts.backendHighErrorRate.threshold 100 }}%) for more than {{ .Values.alerts.backendHighErrorRate.duration }}."
+        {{- end }}
+
+        {{- if .Values.alerts.backendCPUAboveHPA.enabled }}
+        # Alert 2: Backend CPU vượt HPA threshold
+        - alert: BackendCPUAboveHPAThreshold
+          expr: |
+            (
+              sum(rate(container_cpu_usage_seconds_total{
+                namespace="{{ .Values.backend.namespace }}",
+                pod=~"backend-.*",
+                container="backend"
+              }[5m])) by (pod)
+              /
+              sum(kube_pod_container_resource_limits{
+                namespace="{{ .Values.backend.namespace }}",
+                pod=~"backend-.*",
+                container="backend",
+                resource="cpu"
+              }) by (pod)
+            ) * 100 > {{ .Values.alerts.backendCPUAboveHPA.cpuThreshold }}
+          for: {{ .Values.alerts.backendCPUAboveHPA.duration }}
+          labels:
+            severity: {{ .Values.alerts.backendCPUAboveHPA.severity }}
+            component: backend
+          annotations:
+            summary: "Backend CPU above HPA threshold"
+            description: "Backend pod {{`{{ $labels.pod }}`}} CPU usage is above {{ .Values.alerts.backendCPUAboveHPA.cpuThreshold }}% for more than {{ .Values.alerts.backendCPUAboveHPA.duration }}."
+        {{- end }}
+
+{{- end }}

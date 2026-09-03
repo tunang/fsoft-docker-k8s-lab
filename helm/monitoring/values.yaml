@@ -13,3 +13,18 @@ backend:
     port: http
     path: /metrics
     interval: 15s
+
+alerts:
+  enabled: true
+
+  backendHighErrorRate:
+    enabled: true
+    threshold: 0.05
+    duration: 5m
+    severity: warning
+
+  backendCPUAboveHPA:
+    enabled: true
+    cpuThreshold: 30
+    duration: 5m
+    severity: warning
